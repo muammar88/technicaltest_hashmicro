@@ -27,7 +27,6 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 interface MenuInfo {
   menu: Record<string, any>;
-  submenu: Record<string, any>;
   tab: Record<string, any>;
 }
 
@@ -92,9 +91,17 @@ onMounted(() => {
     class="absolute left-0 top-0 z-9998 flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 shadow-lg"
   >
     <div class="flex items-center justify-center gap-2 px-6 py-2.5 lg:py-3.5">
-      <router-link to="/">
-        <img :src="'/images/ziwah.png'" alt="Logo" class="h-14" />
+      <router-link
+        to="/"
+        class="w-full flex flex-col justify-center items-center p-5 bg-gray-900 mb-6 rounded text-white"
+      >
+        <img
+          class="h-4 w-auto"
+          src="https://www.hashmicro.com/assets/logo/logo-hashmicro-white.webp"
+          alt="logo"
+        />
       </router-link>
+
       <button class="block lg:hidden">
         <svg
           class="fill-current"

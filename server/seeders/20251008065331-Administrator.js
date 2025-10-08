@@ -12,7 +12,7 @@ module.exports = {
       [
         {
           fullname: "Super Administrator",
-          username: "admin",
+          username: "admin@gmail.com",
           password: await bcrypt.hash("admin", 10),
           createdAt: new Date(),
           updatedAt: new Date(),

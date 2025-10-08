@@ -3,6 +3,7 @@
 import { useSidebarStore } from '@/stores/sidebar';
 import { SettingStore } from '@/stores/settings';
 import DropdownUser from './DropdownUser.vue';
+import Logout from '@/modules/TestingArea/widgets/Header/Logout.vue';
 import { ref, watchEffect } from 'vue';
 
 const { toggleSidebar } = useSidebarStore();
@@ -23,7 +24,7 @@ import { useHead } from '@vueuse/head';
     class="sticky top-0 z-998 bg-left flex w-full drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none"
   >
     <div
-      class="flex bg-gradient-to-r from-green-900 from-5% to-white/0 to-100% flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11"
+      class="flex bg-gradient-to-r from-gray-900 from-5% to-white/0 to-100% flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11"
     >
       <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
         <button
@@ -65,15 +66,17 @@ import { useHead } from '@vueuse/head';
       <div class="hidden sm:block">
         <span class="hidden text-left lg:block">
           <span class="block text-sm font-semibold text-white dark:text-white"
-            >APLIKASI MUSTAHIK & MUZAKKI</span
+            >TECHNICAL TESTING APP</span
           >
-          <span class="block text-sm font-normal text-white dark:text-white"
-            >Kabupaten Aceh Tengah</span
+
+          <span class="block text-sm font-semibold text-white dark:text-white italic"
+            >Hello, {{ SettingGlob.sharedObject.fullname }}</span
           >
         </span>
       </div>
       <div class="flex items-center gap-3 2xsm:gap-7">
-        <DropdownUser />
+        <!-- <DropdownUser /> -->
+        <Logout ref="logoutRef" @close-dropdown="closeDropdown" />
       </div>
     </div>
   </header>

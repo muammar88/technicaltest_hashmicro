@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Content from './widgets/Content.vue';
-import Header from './widgets/Header.vue';
 import LoadOverlay from '@/components/Loading/LoadOverlay.vue';
 </script>
 <template>

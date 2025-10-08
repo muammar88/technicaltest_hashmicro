@@ -16,7 +16,11 @@ class Controllers extends Models {
       return;
 
     try {
-      const data = this.get_info();
+      const data = await this.get_info();
+
+      console.log("-----Data----");
+      console.log(data);
+      console.log("-----Data----");
 
       const userPayload = {
         id: data.id,
@@ -32,7 +36,7 @@ class Controllers extends Models {
         { expiresIn: "7d" }
       );
 
-      refreshTokens.push(refresh_token);
+      this.refreshTokens.push(refresh_token);
 
       this.res.status(200).json({
         error: false,
@@ -48,41 +52,71 @@ class Controllers extends Models {
   }
 
   async refresh() {
-    const { refresh_token } = this.req.body;
-    if (!refresh_token) {
-      return this.res
-        .status(401)
-        .json({ error: true, message: "Token diperlukan" });
-    }
-
-    if (!this.refreshTokens.includes(refresh_token)) {
-      return this.res
-        .status(403)
-        .json({ error: true, message: "Token tidak dikenali" });
-    }
-
-    jwt.verify(refresh_token, process.env.REFRESH_SECRET_KEY, (err, user) => {
-      if (err) {
-        return this.res.status(403).json({
-          error: true,
-          message: "Token kadaluarsa atau tidak valid",
-        });
+    try {
+      const { refresh_token } = this.req.body;
+      if (!refresh_token) {
+        return this.res
+          .status(401)
+          .json({ error: true, message: "Token diperlukan" });
       }
 
-      const { exp, iat, ...cleanUser } = user;
-      const accessToken = jwt.sign(cleanUser, process.env.SECRET_KEY, {
-        expiresIn: "5m",
-      });
+      if (!this.refreshTokens.includes(refresh_token)) {
+        return this.res
+          .status(403)
+          .json({ error: true, message: "Token tidak dikenali" });
+      }
 
-      // feedBack
+      jwt.verify(refresh_token, process.env.REFRESH_SECRET_KEY, (err, user) => {
+        if (err) {
+          return this.res.status(403).json({
+            error: true,
+            message: "Token kadaluarsa atau tidak valid",
+          });
+        }
+
+        console.log("xxx");
+        console.log(user);
+        console.log("xxx");
+
+        // const { exp, iat, ...cleanUser } = user;
+        const { exp, iat, ...userPayload } = user;
+        const accessToken = jwt.sign(userPayload, process.env.SECRET_KEY, {
+          expiresIn: "5m",
+        });
+
+        // feedBack
+        this.res.status(200).json({
+          error: false,
+          message: "Token baru berhasil dibuat",
+          data: {
+            access_token: accessToken,
+          },
+        });
+      });
+    } catch (error) {
+      console.log("____");
+      console.log(error);
+      console.log("____");
+    }
+  }
+
+  async administrator() {
+    try {
+      const data = await this.get_menu_submenu_tab();
+
       this.res.status(200).json({
         error: false,
-        message: "Token baru berhasil dibuat",
+        message: "Success.",
         data: {
-          access_token: accessToken,
+          sidebar_info: data.sidebar_info,
+          user_info: data.user_info,
         },
       });
-    });
+    } catch (error) {
+      console.log("--------");
+      console.log(error);
+      console.log("--------");
+    }
   }
 }
 

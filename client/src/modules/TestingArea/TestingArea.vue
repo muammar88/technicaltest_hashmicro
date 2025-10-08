@@ -27,9 +27,8 @@ interface MenuItem {
   tab: null | any;
 }
 
-interface MenuInfo {
+interface SidebarInfo {
   menu: Record<string, MenuItem>;
-  submenu: Record<string, any>;
   tab: Record<string, any>;
   default_tab: Record<string, any>;
 }
@@ -40,14 +39,18 @@ interface UserInfo {
   type: string;
 }
 
-interface ServerResponse {
-  error: boolean;
-  error_msg: string;
-  menu_info: MenuInfo;
+interface Datas {
+  sidebar_info: SidebarInfo;
   user_info: UserInfo;
 }
 
-const menu_info = ref<MenuInfo | null>(null);
+interface ServerResponse {
+  error: boolean;
+  message: string;
+  data: Datas;
+}
+
+const sidebar_info = ref<SidebarInfo | null>(null);
 const user_info = ref<UserInfo | null>(null);
 
 // Mengambil data dari API
@@ -58,20 +61,32 @@ const fetchData = async () => {
       isError.value = true;
     } else {
       // Menyimpan data ke dalam state
-      menu_info.value = response.data.menu_info;
-      user_info.value = response.data.user_info;
+      sidebar_info.value = response.data.data.sidebar_info;
+      user_info.value = response.data.data.user_info;
+
+      console.log('-----sidebar_info.value');
+      console.log(sidebar_info.value);
+      console.log('-----sidebar_info.value');
 
       globalTab.clearObject();
-      for (const x in response.data.menu_info.tab) {
-        globalTab.addItem(x, response.data.menu_info.tab[x]);
+      for (const x in response.data.data.sidebar_info.tab) {
+        globalTab.addItem(x, response.data.data.sidebar_info.tab[x]);
       }
+
+      console.log('-----globalTab.value');
+      console.log(sidebar_info.value);
+      console.log('-----sidebar_info.value');
 
       SettingGlob.clearObject();
-      for (const x in response.data.user_info) {
-        SettingGlob.addItem(x, response.data.user_info[x]);
+      for (const x in response.data.data.user_info) {
+        SettingGlob.addItem(x, response.data.data.user_info[x]);
       }
 
-      const menu = response.data.menu_info.menu;
+      console.log('xx|||||');
+      console.log(SettingGlob.sharedObject);
+      console.log('xx|||||');
+
+      const menu = response.data.data.sidebar_info.menu;
       const menuPertama = Object.values(menu)[0];
 
       selectMenu.setString(menuPertama.name);
@@ -96,9 +111,9 @@ const fetchData = async () => {
 };
 
 onMounted(() => {
-  const token = localStorage.getItem('administrator_access_token');
+  const token = localStorage.getItem('access_token');
   if (!token) {
-    window.location.href = '/login-admin'; // direct ke root
+    window.location.href = '/'; // direct ke root
   } else {
     fetchData();
   }
@@ -108,7 +123,7 @@ onMounted(() => {
   <LoadOverlay />
   <div>
     <div class="flex h-screen overflow-hidden">
-      <Sidebar :menu_info="menu_info" />
+      <Sidebar :menu_info="sidebar_info" />
       <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
         <Header class="z-50 bg-gray-300" />
         <main>

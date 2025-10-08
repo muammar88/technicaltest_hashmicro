@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Notification from '@/components/Modal/Notification.vue';
+import { API_URL } from '@/config/config';
 
 interface FormData {
   username: string;
@@ -47,25 +48,23 @@ const validateForm = (): boolean => {
 };
 
 const LoginProcess = async () => {
-  if (!validateForm()) {
-    const message = Object.values(errors.value).join('\n');
-    displayNotification(message, 'error');
-    return;
-  }
+  if (!validateForm()) return;
 
   try {
-    const baseUrl = window.location.protocol + '//' + window.location.hostname + ':3003';
-    const response = await axios.post(baseUrl + '/auth/login_administrator', {
+    console.log('----');
+    console.log(API_URL);
+    console.log('----');
+    const response = await axios.post(API_URL + '/login', {
       username: form.value.username,
       password: form.value.password,
     });
     // filter
     if (response.status === 200) {
-      localStorage.setItem('administrator_access_token', response.data.access_token);
-      localStorage.setItem('administrator_refresh_token', response.data.refresh_token);
+      localStorage.setItem('access_token', response.data.data.access_token);
+      localStorage.setItem('refresh_token', response.data.data.refresh_token);
       displayNotification(response.data.message, 'success');
       setTimeout(() => {
-        window.location.href = '/administrator-area';
+        window.location.href = '/testing-area';
       }, 1200);
     } else {
       displayNotification(error.response.data.message, 'error');
@@ -97,7 +96,7 @@ onMounted(() => {
         class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700"
       >
         <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <form class="space-y-4 md:space-y-6" action="#">
+          <form class="space-y-4 md:space-y-6" @submit.prevent="LoginProcess">
             <div>
               <label
                 for="email"
@@ -105,13 +104,14 @@ onMounted(() => {
                 >Username</label
               >
               <input
-                type="email"
+                v-model="form.username"
+                type="text"
                 name="email"
                 id="email"
                 class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="name@company.com"
-                required=""
               />
+              <p v-if="errors.username" class="text-red-500 text-sm mt-1">{{ errors.username }}</p>
             </div>
             <div>
               <label
@@ -121,12 +121,13 @@ onMounted(() => {
               >
               <input
                 type="password"
+                v-model="form.password"
                 name="password"
                 id="password"
                 placeholder="••••••••"
                 class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required=""
               />
+              <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
             </div>
             <button
               type="submit"

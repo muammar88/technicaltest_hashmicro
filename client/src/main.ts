@@ -147,6 +147,9 @@ import {
   faCircleCheck,
   faSpinner,
   faPaperPlane,
+  faVials,
+  faTachometerAlt,
+  faBoxesStacked,
 } from '@fortawesome/free-solid-svg-icons';
 
 // FontAwesome Icons - Regular
@@ -276,6 +279,10 @@ library.add(
   faCircleCheck,
   faSpinner,
   faPaperPlane,
+  faVials,
+  faTachometerAlt,
+  faBoxesStacked,
+  faFileLines,
 );
 
 // Buat App Vue

@@ -16,8 +16,8 @@ module.exports = {
         {
           name: "Dashboard",
           path: "dashboard",
-          icon: "fas fa-tachometer-alt",
-          tab: `[{"id":"${tabs[0].id}"}]`,
+          icon: "fa-solid fa-tachometer-alt",
+          tab: `[{"id":"${tabs[0].id}"},{"id":"${tabs[1].id}"}]`,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
