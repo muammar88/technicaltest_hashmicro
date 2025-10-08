@@ -44,7 +44,7 @@ app.use(
 app.set("view engine", "ejs");
 
 // Load router dinamis
-const arr_router = ["user", "manage_data", "conversi_text"];
+const arr_router = ["administrator", "manage_data", "conversi_text"];
 
 const arr = {};
 arr_router.forEach((e) => {
