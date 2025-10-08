@@ -1,11 +1,22 @@
-<script setup></script>
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Aplikasi Muzakki & Mustahik Kabupaten Aceh Tengah',
+  link: [{ rel: 'icon', type: 'image/png', href: 'public/favicon.png' }],
+  meta: [
+    {
+      name: 'Aplikasi Muzakki & Mustahik',
+      content: 'Aplikasi Muzakki & Mustahik Kabupaten Aceh Tengah',
+    },
+  ],
+})
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <RouterView />
 </template>
 
 <style scoped></style>
