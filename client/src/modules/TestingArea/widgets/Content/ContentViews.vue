@@ -8,53 +8,11 @@ import {
 } from '../../../../stores/sidebar';
 import { initTooltips } from 'flowbite';
 import DaftarProduct from '@/modules/DaftarProduct/DaftarProduct.vue';
-// import syarat from '@/modules/Syarat/syarat.vue';
-// import SystemLogSurveyor from '@/modules/SystemLogSurveyor/SystemLogSurveyor.vue';
-// import Bank from '@/modules/Bank/Bank.vue';
-// import RequestKeanggotaan from '@/modules/RequestKeanggotaan/RequestKeanggotaan.vue';
-// import RunningText from '@/modules/RunningText/RunningText.vue';
-// import BankPengumpulan from '@/modules/BankPengumpulan/BankPengumpulan.vue';
-// import PengaturanUmum from '@/modules/PengaturanUmum/PengaturanUmum.vue';
-// import GrupAkses from '@/modules/GrupAkses/GrupAkses.vue';
-// import DaftarPengguna from '@/modules/DaftarPengguna/DaftarPengguna.vue';
-// import KegiatanKeseketariatan from '@/modules/KegiatanKeseketariatan/KegiatanKeseketariatan.vue';
-// import TemplatePesanWhatsapp from '@/modules/TemplatePesanWhatsapp/TemplatePesanWhatsapp.vue';
-// import DaftarKeanggotaan from '@/modules/DaftarKeanggotaan/DaftarKeanggotaan.vue';
-// import kecamatan from '@/modules/Kecamatan/Kecamatan.vue';
-// import SystemLog from '@/modules/SystemLog/SystemLog.vue';
-// import PengaturanWhatsapp from '@/modules/PengaturanWhatsapp/PengaturanWhatsapp.vue';
-// import LaporanUmum from '@/modules/DaftarLaporanUmum/LaporanUmum.vue';
-// import ProgramKegiatanBantuan from '@/modules/ProgramKegiatanBantuan/ProgramKegiatanBantuan.vue';
-// import DaftarProgram from '@/modules/DaftarProgram/DaftarProgram.vue';
-// import LaporanAsnafFakir from '@/modules/LaporanAsnaf/LaporanAsnafFakir.vue';
-// import ProgramDonasi from '@/modules/ProgramDonasi/ProgramDonasi.vue';
-// import DaftarTab from '@/modules/DaftarTab/DaftarTab.vue';
-// import desa from '../../../Desa/Desa.vue';
-// import RiwayatDonasi from '@/modules/RiwayatDonasi/RiwayatDonasi.vue';
-// import DaftarAsnaf from '@/modules/DaftarAsnaf/DaftarAsnaf.vue';
-// import LaporanAsnafMiskin from '@/modules/LaporanAsnaf/LaporanAsnafMIskin.vue';
-// import LaporanAsnafFisabilillah from '@/modules/LaporanAsnaf/LaporanAsnafFisabilillah.vue';
-// import LaporanAsnafGharim from '@/modules/LaporanAsnaf/LaporanAsnafGharim.vue';
-// import LaporanAsnafMuallaf from '@/modules/LaporanAsnaf/LaporanAsnafMuallaf.vue';
-// import LaporanAsnafIbnuSabil from '@/modules/LaporanAsnaf/LaporanAsnafIbnuSabil.vue';
-// import RiwayatZakat from '@/modules/RiwayatZakat/RiwayatZakat.vue';
-// import UrutanBagianMonev from '@/modules/UrutanBagianMonev/UrutanBagianMonev.vue';
-// import RiwayatInfaq from '@/modules/RiwayatInfaq/RiwayatInfaq.vue';
-// import Penetapan from '@/modules/Penetapan/Penetapan.vue';
-// import LaporanTahunan from '@/modules/LaporanTahunan/LaporanTahunan.vue';
-// import PertanyaanMonev from '@/modules/PertanyaanMonev/PertanyaanMonev.vue';
-// import RekapPengumpulan from '@/modules/RekapPengumpulan/RekapPengumpulan.vue';
-// import LaporanPerencanaan from '@/modules/LaporanPerencanaan/LaporanPerencanaan.vue';
-// import TargetPengumpulan from '@/modules/TargetPengumpulan/TargetPengumpulan.vue';
-// import TargetDistribusi from '@/modules/TargetDistribusi/TargetDistribusi.vue';
-// import RekapDistribusiPerAsnaf from '@/modules/RekapDistribusiPerAsnaf/RekapDistribusiPerAsnaf.vue';
-// import LaporanKesekretariatan from '@/modules/LaporanKesekretariatan/LaporanKesekretariatan.vue';
-// import Beranda from '@/modules/Beranda/Beranda.vue';
-// import RekapPengumpulanPerKecamatan from '@/modules/RekapPengumpulanPerKecamatan/RekapPengumpulanPerKecamatan.vue';
-// import RekapPerkecamatan from '@/modules/RekapPerkecamatan/RekapPerkecamatan.vue';
+import ConvertText from '@/modules/ConvertText/ConvertText.vue';
 
 const tabComponents = {
   daftar_product: DaftarProduct,
+  convert_text: ConvertText,
 };
 
 const selectedTab = useSelectedTab();
