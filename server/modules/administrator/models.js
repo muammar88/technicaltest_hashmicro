@@ -80,9 +80,6 @@ class Models {
 
       return { sidebar_info: { menu, tab }, user_info: user_info };
     } catch (error) {
-      console.log("~~~~~~~~~~~");
-      console.log(error);
-      console.log("~~~~~~~~~~~");
       return {};
     }
   }

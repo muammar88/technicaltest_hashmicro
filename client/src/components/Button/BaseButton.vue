@@ -31,30 +31,6 @@ const props = defineProps({
   },
 });
 
-// const windowWidth = ref(window.innerWidth);
-
-// const dynamicLabel = (val) => {
-//   if (windowWidth.value < 640) {
-//     // < sm → mobile
-//     return '';
-//   } else if (windowWidth.value < 1269) {
-//     // sm
-//     return val.slice(0, 8) + '...';
-//   } else if (windowWidth.value < 1467) {
-//     // md
-//     return val.slice(0, 8) + '...';
-//   } else if (windowWidth.value < 1611) {
-//     // lg
-//     return val.slice(0, 13) + '...';
-//   } else if (windowWidth.value < 1707) {
-//     // xl
-//     return val.slice(0, 16) + '...';
-//   } else {
-//     // 2xl atau lebih
-//     return val;
-//   }
-// };
-
 // Mengelola class secara dinamis dengan computed property
 const buttonClasses = computed(() => {
   const baseClasses = [
@@ -72,7 +48,7 @@ const buttonClasses = computed(() => {
   ];
 
   const variantClasses = {
-    primary: 'bg-gray-900 text-white hover:bg-[#2b6443] focus:ring-gray-900',
+    primary: 'bg-gray-900 text-white hover:bg-gray-700 focus:ring-gray-900',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400',
     warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',

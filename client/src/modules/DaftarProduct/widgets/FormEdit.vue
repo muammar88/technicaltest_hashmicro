@@ -3,17 +3,14 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import Notification from '@/components/Modal/Notification.vue';
 import BaseButton from '@/components/Button/BaseButton.vue';
-import InputFile from '@/components/Form/InputFile.vue';
 import InputText from '@/components/Form/InputText.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
-
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 // Composable
 import { useNotification } from '@/composables/useNotification';
 
 // Service
-import { update_product, get_info_edit_product } from '@/service/product';
+import { update_product, get_info_edit } from '@/service/product';
 
 // Composable: notification
 const { showNotification, notificationType, notificationMessage, displayNotification } =
@@ -21,7 +18,7 @@ const { showNotification, notificationType, notificationMessage, displayNotifica
 
 interface Props {
   isModalOpen: boolean;
-  selectedBank: any;
+  selectedProduk: number;
 }
 
 const props = defineProps<Props>();
@@ -41,8 +38,8 @@ const closeModal = () => {
 // Function: Reset form
 const resetForm = () => {
   form.value.name = '';
-  form.value.img = null;
-  preview.value = null;
+  form.value.desc = '';
+
   errors.value = {};
 };
 
@@ -63,8 +60,8 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.value.img) {
-    errors.value.img = 'Logo bank wajib diisi.';
+  if (form.value.desc === '') {
+    errors.value.desc = 'Deskripsi produk tidak boleh kosong.';
     isValid = false;
   }
 
@@ -73,41 +70,31 @@ const validateForm = () => {
   return isValid;
 };
 
-// Function: Handle file
-const preview = ref<string | null>(null);
-
-const handleFile = (file: File | null) => {
-  if (!file) {
-    form.value.img = null;
-    preview.value = null;
-    return;
-  }
-
-  // Validasi ukuran file
-  const fileSizeKB = Math.round(file.size / 1024);
-  if (fileSizeKB > 1000) {
-    errors.value.img = 'Ukuran file maksimal 1000 KB';
-    return;
-  }
-
-  form.value.img = file;
-  preview.value = URL.createObjectURL(file);
-};
-
 // State: Loading
 const isLoading = ref(true);
+const form = ref<{ name: string; desc: string }>({
+  name: '',
+  desc: '',
+});
 
 // Function: Fetch Data
 const fetchData = async () => {
-  if (!props.selectedBank || !props.selectedBank.id) return;
+  console.log('isLoading----');
+  console.log(isLoading);
+  console.log(props.selectedProduk);
+  console.log('isLoading----');
+  // if (!props.selectedProduk) return;
   try {
-    const response = await get_info_edit_product(props.selectedBank.id);
+    const response = await get_info_edit(props.selectedProduk);
     form.value.name = response.data.name;
-    form.value.img = response.data.img;
-    preview.value = response.data.img;
+    form.value.desc = response.data.description;
+
+    console.log('__________________response');
     console.log(response);
+    console.log(form.value);
+    console.log('__________________response');
   } catch (error) {
-    displayNotification('Gagal mengambil data bank', 'error');
+    displayNotification('Gagal', 'error');
   } finally {
     isLoading.value = false;
   }
@@ -115,26 +102,20 @@ const fetchData = async () => {
 
 // Function: Handle submit
 const isSubmitting = ref(false);
-const form = ref<{ name: string; img: File | null }>({
-  name: '',
-  img: null,
-});
 
 const handleSubmit = async () => {
   if (!validateForm()) return;
 
-  const bank_id = props.selectedBank.id;
-  const formData = new FormData();
-  formData.append('id', bank_id.toString());
-  formData.append('name', form.value.name);
-  if (form.value.img) formData.append('img', form.value.img);
-
   isSubmitting.value = true;
 
   try {
-    const response = await update_product(formData);
+    const response = await update_product({
+      id: props.selectedProduk,
+      name: form.value.name,
+      desc: form.value.desc,
+    });
     console.log(response);
-    emit('status', { error_msg: response.error_msg, error: response.error });
+    emit('status', { error_msg: response.messsage, error: response.error });
     closeModal();
   } catch (error: any) {
     console.error(error);
@@ -150,7 +131,9 @@ const handleEscape = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.isModalOpen) closeModal();
 };
 onMounted(async () => {
-  await fetchData();
+  if (props.selectedProduk && props.selectedProduk !== 0) {
+    await fetchData();
+  }
   document.addEventListener('keydown', handleEscape);
 });
 
@@ -160,10 +143,16 @@ onBeforeUnmount(async () => {
 });
 
 watch(
-  () => props.selectedBank,
+  () => props.selectedProduk,
   (val) => {
-    if (props.isModalOpen && val?.id) fetchData();
+    if (props.selectedProduk != 0) {
+      console.log('---DDDDSAA');
+      console.log(props.selectedProduk);
+      console.log('---DDDDSAA');
+      fetchData();
+    }
   },
+  { immediate: true },
 );
 </script>
 
@@ -187,7 +176,7 @@ watch(
       <div v-else class="relative max-w-md w-full bg-white shadow-2xl rounded-2xl p-6 space-y-6">
         <!-- Header -->
         <div class="flex items-center justify-between">
-          <h2 id="modal-title" class="text-xl font-bold text-gray-800">Edit Bank</h2>
+          <h2 id="modal-title" class="text-xl font-bold text-gray-800">Edit Produk</h2>
           <button
             class="text-gray-400 text-lg hover:text-gray-600"
             @click="closeModal"
@@ -197,32 +186,40 @@ watch(
           </button>
         </div>
 
-        <!-- Nama Bank -->
+        <!-- Nama Produk -->
         <div>
           <InputText
             id="name"
             v-model="form.name"
-            label="Nama Bank"
+            label="Nama Produk"
             type="text"
-            placeholder="Masukkan nama bank"
+            placeholder="Masukkan nama produk"
             :error="errors.name"
           />
         </div>
 
-        <!-- Upload Logo -->
+        <!-- Deskripsi Produk-->
         <div>
-          <InputFile
-            id="photo-upload"
-            label="Upload Logo"
-            buttonText="Pilih File"
-            accept=".jpg,.jpeg,.png"
-            :initialPreview="BASE_URL + '/uploads/img/bank/' + props.selectedBank?.img"
-            :initialFileName="props.selectedBank?.img?.split('/').pop() || ''"
-            :error="errors.img"
-            dimensionsInfo="100x33 px"
-            :maxSize="1000"
-            @file-selected="handleFile"
-          />
+          <label for="runningText" class="block text-sm font-medium text-gray-700 mb-2">
+            Deskripsi Produk <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            id="runningText"
+            v-model="form.desc"
+            rows="4"
+            class="mt-1 block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-900 focus:border-green-900 transition-colors"
+            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.desc }"
+            placeholder="Isi dengan deskripsi produk disini..."
+            :disabled="isSubmitting"
+            maxlength="500"
+            required
+            aria-required="true"
+            :aria-invalid="!!errors.desc"
+            aria-describedby="text-error counter-info"
+          ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p id="text-error" v-if="errors.desc" class="text-sm text-red-600">{{ errors.desc }}</p>
+          </div>
         </div>
 
         <!-- Actions -->
@@ -238,7 +235,7 @@ watch(
           <BaseButton
             type="submit"
             variant="primary"
-            :disabled="!(form.name.trim() || (form.img && !isSubmitting))"
+            :disabled="!((form.name || '').trim() && (form.desc || '').trim())"
             @click="handleSubmit"
           >
             <span v-if="isSubmitting">Menyimpan...</span>

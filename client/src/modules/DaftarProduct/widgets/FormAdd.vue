@@ -3,7 +3,6 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import Notification from '@/components/Modal/Notification.vue';
 import BaseButton from '@/components/Button/BaseButton.vue';
-import InputFile from '@/components/Form/InputFile.vue';
 import InputText from '@/components/Form/InputText.vue';
 
 // Composable
@@ -37,7 +36,7 @@ const closeModal = () => {
 // Function: Reset form
 const resetForm = () => {
   form.value.name = '';
-  form.value.img = null;
+  form.value.desc = '';
 
   // Reset errors
   errors.value = {};
@@ -46,7 +45,7 @@ const resetForm = () => {
 // Function:
 const errors = ref<Record<string, string>>({
   name: '',
-  img: '',
+  desc: '',
 });
 
 const validateForm = () => {
@@ -56,60 +55,32 @@ const validateForm = () => {
   errors.value = {};
 
   if (form.value.name === '') {
-    errors.value.name = 'Nama bank tidak boleh kosong.';
+    errors.value.name = 'Nama produk tidak boleh kosong.';
     isValid = false;
   }
 
-  if (!form.value.img) {
-    errors.value.img = 'Logo bank wajib diisi.';
+  if (form.value.desc === '') {
+    errors.value.desc = 'Deskripsi produk tidak boleh kosong.';
     isValid = false;
   }
-
-  console.log(errors.value);
 
   return isValid;
 };
 
-// Function: Handle file
-const handleFile = (file: File | null) => {
-  if (!file) {
-    form.value.img = null;
-    return;
-  }
-
-  // Validasi ukuran file
-  const fileSizeKB = Math.round(file.size / 1024);
-  if (fileSizeKB > 1000) {
-    errors.value.img = 'Ukuran file maksimal 1000 KB';
-    return;
-  }
-
-  form.value.img = file;
-};
-
 // Function: Handle submit
 const isSubmitting = ref(false);
-const form = ref<{ name: string; img: File | null }>({
+const form = ref<{ name: string; desc: string }>({
   name: '',
-  img: null,
+  desc: '',
 });
 
 const handleSubmit = async () => {
   if (!validateForm()) return;
 
-  const formData = new FormData();
-  formData.append('name', form.value.name);
-  if (form.value.img) formData.append('img', form.value.img);
-
-  isSubmitting.value = true;
-
-  console.log(formData.get('name'));
-  console.log(formData.get('img'));
-
   try {
-    const response = await add_product(formData);
+    const response = await add_product({ name: form.value.name, desc: form.value.desc });
     console.log(response);
-    emit('status', { error_msg: response.error_msg || response, error: response.error });
+    emit('status', { error_msg: response.message });
     closeModal();
   } catch (error: any) {
     console.error(error);
@@ -153,7 +124,7 @@ onBeforeUnmount(async () => {
       <div class="relative max-w-md w-full bg-white shadow-2xl rounded-2xl p-6 space-y-6">
         <!-- Header -->
         <div class="flex items-center justify-between">
-          <h2 id="modal-title" class="text-xl font-bold text-gray-800">Tambah Bank</h2>
+          <h2 id="modal-title" class="text-xl font-bold text-gray-800">Tambah Produk</h2>
           <button
             class="text-gray-400 text-lg hover:text-gray-600"
             @click="closeModal"
@@ -163,30 +134,40 @@ onBeforeUnmount(async () => {
           </button>
         </div>
 
-        <!-- Nama Bank -->
+        <!-- Nama Produk -->
         <div>
           <InputText
             id="name"
             v-model="form.name"
-            label="Nama Bank"
+            label="Nama Produk"
             type="text"
-            placeholder="Masukkan nama bank"
+            placeholder="Masukkan nama produk"
             :error="errors.name"
           />
         </div>
 
-        <!-- Upload Logo -->
+        <!-- Deskripsi Produk-->
         <div>
-          <InputFile
-            id="photo-upload"
-            label="Upload Logo"
-            buttonText="Pilih File"
-            accept=".jpg,.jpeg,.png"
-            :error="errors.img"
-            :maxSize="1000"
-            dimensionsInfo="100x33 px"
-            @file-selected="handleFile"
-          />
+          <label for="runningText" class="block text-sm font-medium text-gray-700 mb-2">
+            Deskripsi Produk <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            id="runningText"
+            v-model="form.desc"
+            rows="4"
+            class="mt-1 block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-900 focus:border-green-900 transition-colors"
+            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': errors.desc }"
+            placeholder="Isi dengan deskripsi produk disini..."
+            :disabled="isSubmitting"
+            maxlength="500"
+            required
+            aria-required="true"
+            :aria-invalid="!!errors.desc"
+            aria-describedby="text-error counter-info"
+          ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p id="text-error" v-if="errors.desc" class="text-sm text-red-600">{{ errors.desc }}</p>
+          </div>
         </div>
 
         <!-- Actions -->
@@ -202,7 +183,7 @@ onBeforeUnmount(async () => {
           <BaseButton
             type="submit"
             variant="primary"
-            :disabled="!(form.name.trim() || (form.img && !isSubmitting))"
+            :disabled="!(form.name.trim() && form.desc.trim())"
             @click="handleSubmit"
           >
             <span v-if="isSubmitting">Menyimpan...</span>

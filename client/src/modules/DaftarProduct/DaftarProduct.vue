@@ -44,11 +44,19 @@ const { showConfirmDialog, confirmTitle, confirmMessage, displayConfirmation, co
 // State Data Bank
 const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
+interface Item {
+  id: number;
+  item_code: string;
+  name: string;
+  price: number;
+}
+
 interface Product {
   id: number;
   code: string;
   name: string;
   description: string;
+  available: Item[];
 }
 
 const dataProducts = ref<Product[]>([]);
@@ -56,15 +64,17 @@ const dataProducts = ref<Product[]>([]);
 // Function: Modal
 const isModalAddOpen = ref(false);
 const isModalEditOpen = ref(false);
-const selectedProduct = ref<any>(null);
+const selectedProduct = ref<number>(0);
 
 function openModalAdd() {
   isModalAddOpen.value = true;
 }
 
-function openModalEdit(bank: any) {
-  selectedProduct.value = bank;
-  // console.log('selectedBank Parent', selectedBank.value);
+function openModalEdit(id: number) {
+  console.log('------');
+  console.log(id);
+  console.log('------');
+  selectedProduct.value = id;
   isModalEditOpen.value = true;
 }
 
@@ -137,7 +147,7 @@ async function deleteData(id: number) {
             type="text"
             v-model="search"
             @change="fetchData"
-            placeholder="Cari bank..."
+            placeholder="Cari produk..."
             class="w-full sm:w-64 rounded-lg border-gray-300 shadow-sm px-3 py-2 text-gray-700 focus:border-green-900 focus:ring-2 focus:ring-green-900 transition"
           />
         </div>
@@ -167,7 +177,7 @@ async function deleteData(id: number) {
               <th
                 class="w-[20%] text-center px-6 py-4 font-medium font-bold text-gray-900 text-center"
               >
-                Total Item Tersedia
+                Stok
               </th>
               <th
                 class="w-[10%] text-center px-6 py-4 font-medium font-bold text-gray-900 text-center"
@@ -183,36 +193,31 @@ async function deleteData(id: number) {
                 :key="product.id"
                 class="hover:bg-gray-50 transition-colors"
               >
-                <td class="px-6 py-4 text-center align-middle">
-                  <center>
-                    <div
-                      v-if="bank.img && bank.img !== '-'"
-                      class="relative rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden"
-                      style="width: 100px; height: 33px"
-                      :class="{ 'bg-gray-200': !bank.img || bank.img === '-' }"
-                    >
-                      <img
-                        :src="BASE_URL + '/uploads/img/bank/' + bank.img"
-                        :alt="`Foto Bank ${bank.name}`"
-                        class="object-contain max-w-full max-h-full mx-auto"
-                        @error="bank.img = '-'"
-                      />
-                    </div>
-                    <div
-                      v-else
-                      class="bg-gray-200 text-gray-500 text-center px-4 relative aspect-video max-w-sm rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden"
-                    >
-                      <p class="text-sm font-medium">Gambar tidak tersedia</p>
-                    </div>
-                  </center>
+                <td class="px-6 py-4 text-center font-medium text-gray-800">
+                  {{ product.code }}
                 </td>
                 <td class="px-6 py-4 text-center font-medium text-gray-800">
-                  {{ bank.name }}
+                  {{ product.name }}
+                </td>
+                <td class="px-6 py-4 text-center font-medium text-gray-800">
+                  {{ product.description }}
+                </td>
+                <td class="px-6 py-4 text-center font-medium text-gray-800">
+                  {{ product.available.length }} Unit
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-2">
-                    <LightButton @click="openModalEdit(bank)"><EditIcon /></LightButton>
-                    <DangerButton @click="deleteData(bank.id)"><DeleteIcon /></DangerButton>
+                    <!-- <LightButton
+                      @click="openModalEdit(product.id)"
+                      title="Detail Item Produk Tersedia"
+                      ><font-awesome-icon icon="fa-solid fa-box"
+                    /></LightButton> -->
+                    <LightButton @click="openModalEdit(product.id)" title="Edit Produk"
+                      ><EditIcon
+                    /></LightButton>
+                    <DangerButton @click="deleteData(product.id)" title="Delete Produk"
+                      ><DeleteIcon
+                    /></DangerButton>
                   </div>
                 </td>
               </tr>
@@ -263,8 +268,8 @@ async function deleteData(id: number) {
     />
     <!-- Modal FormEdit -->
     <FormEdit
-      :is-modal-open="isModalEditOpen"
-      :selected-bank="selectedBank"
+      :isModalOpen="isModalEditOpen"
+      :selectedProduk="selectedProduct"
       @close="
         isModalEditOpen = false;
         fetchData();

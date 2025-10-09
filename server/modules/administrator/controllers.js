@@ -28,7 +28,7 @@ class Controllers extends Models {
         fullname: data.fullname,
       };
       const access_token = jwt.sign(userPayload, process.env.SECRET_KEY, {
-        expiresIn: "5m",
+        expiresIn: "500m",
       });
       const refresh_token = jwt.sign(
         userPayload,
@@ -74,11 +74,6 @@ class Controllers extends Models {
           });
         }
 
-        console.log("xxx");
-        console.log(user);
-        console.log("xxx");
-
-        // const { exp, iat, ...cleanUser } = user;
         const { exp, iat, ...userPayload } = user;
         const accessToken = jwt.sign(userPayload, process.env.SECRET_KEY, {
           expiresIn: "5m",
@@ -94,9 +89,10 @@ class Controllers extends Models {
         });
       });
     } catch (error) {
-      console.log("____");
-      console.log(error);
-      console.log("____");
+      this.res.status(400).json({
+        error: false,
+        message: error,
+      });
     }
   }
 
@@ -113,9 +109,10 @@ class Controllers extends Models {
         },
       });
     } catch (error) {
-      console.log("--------");
-      console.log(error);
-      console.log("--------");
+      this.res.status(400).json({
+        error: false,
+        message: error,
+      });
     }
   }
 }
