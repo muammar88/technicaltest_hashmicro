@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  server:
+    image: muammar88/technical_server:1.0.0
+    container_name: Container_server_technical
+    build:
+      context: ./server # pastikan Dockerfile di folder server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server:/app # bind mount source code
+    ports:
+      - "3005:3005" # port unik untuk Baitulmal
+    environment:
+      SECRET_KEY: "9813kbk31023khvviuytyuwqkiwvj9mnb757uytr34nm123o"
+      REFRESH_SECRET_KEY: "y87238giehgaiuwgd82o123455gskiassmnxzxclaoihdsobk"
+      NODE_ENV: "development"
+      PORT: 3005
+      DB_DIALECT: "mysql"
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_NAME: "technicaltest_db"
+      DB_USER: "technicaltest_user"
+      DB_PASS: "technicaltest_password"
+    depends_on:
+      - mysql
+    networks:
+      - app-network-technical
+
+  client:
+    image: muammar88/technical_client:1.0.0
+    container_name: Container_client_technical
+    ports:
+      - "9089:80"
+    environment:
+      VITE_APP_API_BASE_URL: "http://server:3003"
+      NODE_ENV: "development"
+    depends_on:
+      - server
+    networks:
+      - app-network-technical
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_container_technical
+    restart: always
+    environment:
+      MYSQL_DATABASE: technicaltest_db
+      MYSQL_USER: technicaltest_user
+      MYSQL_PASSWORD: technicaltest_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql-data-technical:/var/lib/mysql # named volume unik untuk Baitulmal
+      - ./mysql_config/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network-technical
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_container_technical
+    restart: always
+    ports:
+      - "9085:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root_password
+    depends_on:
+      - mysql
+    networks:
+      - app-network-technical
+
+volumes:
+  mysql-data-technical:
+
+networks:
+  app-network-technical:
+    driver: bridge
